@@ -1,24 +1,23 @@
-
 // Backend principal do ReclamaCidadão
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const User = require('./models/User');
+const User = require('./backend/models/User');
 const crypto = require('crypto');
 let resetTokens = {};
 const app = express();
 
-require('dotenv').config();
+require('dotenv').config({ path: './backend/.env' });
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 
-const auth = require('./middleware/auth');
-const upload = require('./middleware/upload');
-const authController = require('./controllers/authController');
-const postController = require('./controllers/postController');
+const auth = require('./backend/middleware/auth');
+const upload = require('./backend/middleware/upload');
+const authController = require('./backend/controllers/authController');
+const postController = require('./backend/controllers/postController');
 
 // Rotas de autenticação
 app.post('/api/register', authController.register);
@@ -39,7 +38,6 @@ app.post('/api/forgot', async (req, res) => {
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
   const token = crypto.randomBytes(20).toString('hex');
   resetTokens[token] = user._id;
-  // Configure seu e-mail SMTP aqui
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
@@ -66,7 +64,7 @@ app.post('/api/reset/:token', async (req, res) => {
 
 // Editar post
 app.put('/api/posts/:id', auth, upload.single('image'), async (req, res) => {
-  const post = await require('./models/Post').findById(req.params.id);
+  const post = await require('./backend/models/Post').findById(req.params.id);
   if (!post) return res.status(404).json({ error: 'Post não encontrado' });
   if (post.user.toString() !== req.userId) return res.status(403).json({ error: 'Sem permissão' });
   if (req.body.location) post.location = req.body.location;
@@ -79,7 +77,7 @@ app.put('/api/posts/:id', auth, upload.single('image'), async (req, res) => {
 
 // Excluir post
 app.delete('/api/posts/:id', auth, async (req, res) => {
-  const post = await require('./models/Post').findById(req.params.id);
+  const post = await require('./backend/models/Post').findById(req.params.id);
   if (!post) return res.status(404).json({ error: 'Post não encontrado' });
   if (post.user.toString() !== req.userId) return res.status(403).json({ error: 'Sem permissão' });
   await post.deleteOne();
@@ -91,8 +89,6 @@ app.get('/api/dashboard', auth, async (req, res) => {
   const user = await User.findById(req.userId).populate('posts');
   res.json({ user });
 });
-
-// Logout (frontend deve apenas remover o token do localStorage)
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/reclamacidadao';
