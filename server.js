@@ -19,6 +19,7 @@ const upload = require('./backend/middleware/upload');
 const authController = require('./backend/controllers/authController');
 const postController = require('./backend/controllers/postController');
 
+
 // Rotas de autenticação
 app.post('/api/register', authController.register);
 app.post('/api/login', authController.login);
@@ -30,6 +31,13 @@ app.get('/api/posts', postController.getFeed);
 app.get('/api/posts/:id', postController.getPost);
 app.post('/api/posts/:id/like', auth, postController.likePost);
 app.post('/api/posts/:id/comment', auth, postController.commentPost);
+
+// Servir frontend (index.html, CSS, JS) na raiz
+const frontendPath = path.join(__dirname, 'frontend');
+app.use(express.static(frontendPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 // Recuperação de senha
 app.post('/api/forgot', async (req, res) => {
@@ -88,6 +96,14 @@ app.delete('/api/posts/:id', auth, async (req, res) => {
 app.get('/api/dashboard', auth, async (req, res) => {
   const user = await User.findById(req.userId).populate('posts');
   res.json({ user });
+});
+
+const frontendPath = path.join(__dirname, 'frontend');
+app.use(express.static(frontendPath));
+
+// Rota fallback para SPA (opcional, se usar rotas no frontend)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
