@@ -35,6 +35,7 @@ app.post('/api/posts/:id/comment', auth, postController.commentPost);
 // Servir frontend (index.html, CSS, JS) na raiz
 const frontendPath = path.join(__dirname, 'frontend');
 app.use(express.static(frontendPath));
+// Rota fallback para SPA (opcional, se usar rotas no frontend)
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
@@ -98,13 +99,7 @@ app.get('/api/dashboard', auth, async (req, res) => {
   res.json({ user });
 });
 
-const frontendPath = path.join(__dirname, 'frontend');
-app.use(express.static(frontendPath));
 
-// Rota fallback para SPA (opcional, se usar rotas no frontend)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/reclamacidadao';
