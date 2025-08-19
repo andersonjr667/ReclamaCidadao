@@ -2,6 +2,7 @@
 node_modules/
 .env
 uploads/
+backend/node_modules/
 
 # Logs
 npm-debug.log*
