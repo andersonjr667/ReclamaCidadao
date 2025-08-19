@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const User = require('./backend/models/User');
+const auth = require('./backend/middleware/auth');
 const crypto = require('crypto');
 let resetTokens = {};
 const app = express();
@@ -14,7 +15,6 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 
-const auth = require('./backend/middleware/auth');
 const upload = require('./backend/middleware/upload');
 const authController = require('./backend/controllers/authController');
 const postController = require('./backend/controllers/postController');
@@ -36,7 +36,7 @@ app.post('/api/posts/:id/comment', auth, postController.commentPost);
 const frontendPath = path.join(__dirname, 'frontend');
 app.use(express.static(frontendPath));
 // Rota fallback para SPA (opcional, se usar rotas no frontend)
-app.get('*', (req, res) => {
+app.get(/^\/(?!api|uploads).*/, (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
@@ -73,7 +73,8 @@ app.post('/api/reset/:token', async (req, res) => {
 
 // Editar post
 app.put('/api/posts/:id', auth, upload.single('image'), async (req, res) => {
-  const post = await require('./backend/models/Post').findById(req.params.id);
+  const Post = require('./backend/models/Post');
+  const post = await Post.findById(req.params.id);
   if (!post) return res.status(404).json({ error: 'Post não encontrado' });
   if (post.user.toString() !== req.userId) return res.status(403).json({ error: 'Sem permissão' });
   if (req.body.location) post.location = req.body.location;
