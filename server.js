@@ -19,7 +19,9 @@ const app = express();
 require('dotenv').config();
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
+// Corrige o caminho para servir uploads corretamente, mesmo se rodar de diferentes diretórios
+const uploadsPath = path.resolve(__dirname, 'backend', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 
 // Função para garantir que a pasta db existe
