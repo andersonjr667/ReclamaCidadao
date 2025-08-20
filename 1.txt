@@ -1,0 +1,4 @@
+git status
+git add .
+git commit -m "Versão 1.0 BETA"
+git push origin main

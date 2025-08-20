@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1755715998001imdp6ozisrn",
+    "name": "Anderson",
+    "neighborhood": "Centro",
+    "email": "alsj1520@gmail.com",
+    "password": "$2b$10$z9ihmNuYquIQAtr62f2p1ORqFgn815RKw71BUYrIRdia5Mcp5r8MC"
+  },
+  {
+    "id": "1755715998074fxqsmhov91a",
+    "name": "admin",
+    "neighborhood": "Centro",
+    "email": "admin@teste.com",
+    "password": "$2b$10$ZDNe6NMVtYY.TANLYVoOgOlzRRRbUsG2MTkzeH1f3sucGSpoU3z7K"
+  }
+]

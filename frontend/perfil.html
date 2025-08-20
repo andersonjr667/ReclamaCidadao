@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil - ReclamaCidadão</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    body { background: #F5F5F5; font-family: Arial, sans-serif; margin: 0; }
+    .navbar { background: #2196F3; color: #fff; padding: 18px 0 12px 0; text-align: center; font-size: 2rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; }
+    .navbar img { width: 38px; margin-right: 10px; }
+    .profile-main { max-width: 900px; margin: 30px auto 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px; }
+    .profile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+    .profile-user { display: flex; align-items: center; }
+    .profile-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #1976D2; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; margin-right: 18px; }
+    .profile-info { display: flex; flex-direction: column; }
+    .profile-info .name { font-weight: bold; font-size: 1.2rem; color: #222; }
+    .profile-info .userid { color: #444; font-size: 0.98rem; margin-top: 2px; }
+    .profile-actions { display: flex; gap: 10px; }
+    .btn-like { background: #4A90E2; color: #fff; border: none; border-radius: 6px; padding: 10px 18px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+    .btn-like:hover { background: #1976D2; }
+    .btn-home { background: #fff; color: #1976D2; border: 2px solid #1976D2; border-radius: 6px; padding: 10px 18px; font-size: 1rem; cursor: pointer; margin-left: 8px; transition: background 0.2s, color 0.2s; }
+    .btn-home:hover { background: #1976D2; color: #fff; }
+    .posts-list { display: flex; gap: 24px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+    .post-card { background: #64a6e6; color: #222; border-radius: 10px; width: 180px; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 500; box-shadow: 0 2px 8px #0001; transition: box-shadow 0.2s; cursor: pointer; }
+    .post-card:hover { box-shadow: 0 4px 16px #0002; }
+    @media (max-width: 700px) { .profile-main { padding: 12px 2vw; } .posts-list { gap: 10px; } .post-card { width: 110px; height: 90px; font-size: 1.1rem; } }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <img src="logo.png" alt="Logo ReclamaCidadão"> ReclamaCidadão
+  </div>
+  <div class="profile-main">
+    <div class="profile-top">
+      <div class="profile-user">
+        <div class="profile-photo" id="profilePhoto">Foto<br>de perfil</div>
+        <div class="profile-info">
+          <span class="name" id="profileName">Nome completo</span>
+          <span class="userid" id="profileId">Codigo Usuario</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-like" id="likeProfile">Curtir perfil</button>
+        <button class="btn-home" onclick="window.location.href='index.html'">Página inicial</button>
+      </div>
+    </div>
+    <div class="posts-list" id="userPosts">
+      <!-- Cards dos posts -->
+    </div>
+  </div>
+  <script>
+    async function loadProfile() {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = 'login.html'; return; }
+      const res = await fetch('/api/profile', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) { localStorage.removeItem('token'); window.location.href = 'login.html'; return; }
+      const user = await res.json();
+      document.getElementById('profileName').textContent = user.name || 'Nome completo';
+      document.getElementById('profileId').textContent = user._id || user.id || 'Codigo Usuario';
+      if (user.photo) {
+        document.getElementById('profilePhoto').innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      } else {
+        document.getElementById('profilePhoto').innerHTML = 'Foto<br>de perfil';
+      }
+      // Carregar posts do usuário
+      let posts = [];
+      try {
+        const resPosts = await fetch('/api/posts');
+        posts = await resPosts.json();
+      } catch {}
+      const userPosts = posts.filter(p => p.user === user._id || p.user === user.id);
+      const postsDiv = document.getElementById('userPosts');
+      postsDiv.innerHTML = '';
+      if (userPosts.length === 0) {
+        postsDiv.innerHTML = '<div style="color:#333;text-align:center;width:100%;">Nenhuma postagem ainda.</div>';
+      } else {
+        userPosts.forEach((post, idx) => {
+          const div = document.createElement('div');
+          div.className = 'post-card';
+          div.style.flexDirection = 'column';
+          div.style.justifyContent = 'flex-start';
+          div.style.alignItems = 'center';
+          div.style.padding = '10px';
+          div.style.cursor = 'pointer';
+          div.onclick = () => window.location.href = `post.html?id=${post.id || post._id}`;
+          if (post.imageUrl) {
+            const img = document.createElement('img');
+            img.src = post.imageUrl.startsWith('/uploads') ? post.imageUrl : '/uploads/' + post.imageUrl;
+            img.alt = 'Imagem do post';
+            img.style.width = '100%';
+            img.style.maxHeight = '70px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            div.appendChild(img);
+          }
+          const title = document.createElement('div');
+          title.style.fontWeight = 'bold';
+          title.style.marginTop = '8px';
+          title.style.fontSize = '1.1rem';
+          title.textContent = post.type || 'Post';
+          div.appendChild(title);
+          if (post.location) {
+            const loc = document.createElement('div');
+            loc.style.fontSize = '0.95rem';
+            loc.style.color = '#333';
+            loc.textContent = post.location;
+            div.appendChild(loc);
+          }
+          postsDiv.appendChild(div);
+        });
+      }
+    }
+    document.getElementById('likeProfile').onclick = function() {
+      alert('Função de curtir perfil em breve!');
+    };
+    loadProfile();
+  </script>
+</body>
+</html>

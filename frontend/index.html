@@ -2,42 +2,500 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReclamaCidadão</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    body {
+      background: #F5F5F5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background: #1E88E5;
+      color: #fff;
+      padding: 20px 0 15px 0;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 30px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      width: 60px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .btn-post {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #FF9800;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s;
+      z-index: 2;
+    }
+    .btn-post:active, .btn-post:hover {
+      background: #fb8c00;
+    }
+    .btn-profile {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1E88E5;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px 0 80px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(30,136,229,0.07);
+      width: 100%;
+      max-width: 350px;
+      min-height: 220px;
+      margin-bottom: 32px;
+      padding: 24px 20px 60px 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.2s;
+      touch-action: pan-y;
+      user-select: none;
+    }
+    .card img {
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      object-fit: cover;
+      background: #eee;
+    }
+    .card h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.3rem;
+      color: #1E88E5;
+    }
+    .card p {
+      color: #444;
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+    .comments {
+      width: 100%;
+      margin-top: 18px;
+      background: #F5F5F5;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.97rem;
+      color: #333;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+    .add-comment {
+      display: flex;
+      margin-top: 10px;
+      gap: 6px;
+    }
+    .add-comment input {
+      flex: 1;
+      border: 1px solid #E0E0E0;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 1rem;
+    }
+    .add-comment button {
+      background: #1E88E5;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-comment button:hover {
+      background: #1565c0;
+    }
+    .actions {
+      position: absolute;
+      left: 0; right: 0; bottom: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+    .action-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: none;
+      font-size: 2rem;
+      color: #fff;
+      background: #FF9800;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .action-btn.reject {
+      background: #D32F2F;
+    }
+    .action-btn.like {
+      background: #43A047;
+    }
+    .action-btn:active {
+      transform: scale(0.93);
+    }
+    /* Barra inferior para desktop */
+    .bottom-bar {
+      display: none;
+    }
+    /* Formulário de postagem */
+    .modal {
+      display: none;
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(30,136,229,0.10);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .post-form {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(30,136,229,0.13);
+      padding: 24px 20px 18px 20px;
+      min-width: 270px;
+      max-width: 95vw;
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    .post-form label {
+      font-weight: bold;
+      color: #1E88E5;
+      margin-bottom: 2px;
+      font-size: 1rem;
+    }
+    .post-form input, .post-form textarea, .post-form select {
+      border: 1px solid #E0E0E0;
+      border-radius: 4px;
+      padding: 7px 8px;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    .post-form textarea {
+      resize: vertical;
+      min-height: 50px;
+      max-height: 120px;
+    }
+    .post-form .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: #888;
+      cursor: pointer;
+    }
+    .post-form .close-btn:hover {
+      color: #D32F2F;
+    }
+    .post-form .submit-btn {
+      background: #FF9800;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .post-form .submit-btn:hover {
+      background: #fb8c00;
+    }
+    @media (min-width: 700px) {
+      .container {
+        max-width: 600px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+      }
+      .card {
+        max-width: 500px;
+        min-height: 220px;
+        margin-bottom: 36px;
+      }
+      .actions {
+        gap: 50px;
+      }
+      .navbar .btn-post {
+        display: none;
+      }
+      .bottom-bar {
+        display: flex;
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        background: #fff;
+        border-top: 1px solid #E0E0E0;
+        justify-content: center;
+        align-items: center;
+        height: 60px;
+        z-index: 10;
+      }
+      .bottom-bar .btn-post {
+        position: static;
+        transform: none;
+        margin: 0 20px;
+        font-size: 1.1rem;
+        padding: 10px 30px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo"><img src="logo.png" alt="Logo ReclamaCidadão" style="height:40px;vertical-align:middle;"> ReclamaCidadão</div>
-    <button id="postBtn" class="icon-btn"><span>📷</span></button>
-    <button id="profileBtn" class="icon-btn"><span>👤</span></button>
-  </header>
-  <main>
-    <div id="feed" class="feed-container"></div>
-    <div id="postModal" class="modal hidden">
-      <form id="postForm" enctype="multipart/form-data" class="post-form">
-        <h2>Nova Reclamação</h2>
-        <label>Localização:<br><input type="text" id="locationInput" required></label><br>
-        <label>Tipo de problema:<br>
-          <select id="typeInput" required>
-            <option value="Buraco na rua">Buraco na rua</option>
-            <option value="Escola">Escola</option>
-            <option value="Hospital">Hospital</option>
-            <option value="Centro de saúde">Centro de saúde</option>
-            <option value="Iluminação">Iluminação</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Outro">Outro</option>
-          </select>
-        </label><br>
-        <label>Tempo de espera:<br><input type="text" id="waitTimeInput" required></label><br>
-        <label>Foto:<br><input type="file" id="imageInput" accept="image/*" required></label><br>
-        <button type="submit">Postar</button>
-        <button type="button" id="closePostModal">Cancelar</button>
-      </form>
-    </div>
-    <div id="commentModal" class="modal hidden"></div>
-    <div id="profileModal" class="modal hidden"></div>
-  </main>
-  <script src="app.js"></script>
+  <div class="navbar">
+    <button class="btn-profile" title="Ver perfil">&#128100;</button>
+    <img src="logo.png" alt="Logo ReclamaCidadão" class="logo"> ReclamaCidadão
+    <button class="btn-post" title="Nova Reclamação">Postar</button>
+  </div>
+  <div class="container" id="feed">
+    <!-- Os cards serão renderizados via JS -->
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-post" title="Nova Reclamação">Postar</button>
+  </div>
+  <!-- Modal de postagem -->
+  <div class="modal" id="modalPost">
+    <form class="post-form" id="postForm">
+  <button type="button" class="close-btn" onclick="toggleModal(false)">&times;</button>
+  <label for="image">Imagem</label>
+  <input type="file" id="image" name="image" accept="image/*">
+  <label for="type">Tipo</label>
+      <select id="type" name="type" required>
+        <option value="Buraco na rua">Buraco na rua</option>
+        <option value="Escola">Escola</option>
+        <option value="Hospital">Hospital</option>
+        <option value="Centro de saúde">Centro de saúde</option>
+        <option value="Iluminação">Iluminação</option>
+        <option value="Transporte">Transporte</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <label for="location">Localização</label>
+      <input type="text" id="location" name="location" maxlength="80" required>
+      <label for="waitTime">Tempo de espera</label>
+      <input type="text" id="waitTime" name="waitTime" maxlength="40" required>
+      <button type="submit" class="submit-btn">Postar</button>
+    </form>
+  </div>
+  <script>
+    // Função para abrir/fechar modal
+    function toggleModal(show) {
+      document.getElementById('modalPost').classList.toggle('active', show);
+      if (show) document.getElementById('postForm').reset();
+    }
+    // Abrir modal ao clicar em qualquer botão "Postar"
+    document.querySelectorAll('.btn-post').forEach(btn => {
+      btn.onclick = () => toggleModal(true);
+    });
+    // Fechar modal ao clicar fora do form
+    document.getElementById('modalPost').onclick = function(e) {
+      if (e.target === this) toggleModal(false);
+    };
+    // Enviar formulário de postagem
+    document.getElementById('postForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch('/api/posts', {
+          method: 'POST',
+          body: data,
+          headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        if (!res.ok) throw new Error('Erro ao postar');
+        toggleModal(false);
+        loadFeed();
+      } catch (err) {
+        alert('Erro ao postar: ' + err.message);
+      }
+    };
+    // Carregar feed de posts
+    async function loadFeed() {
+      const feed = document.getElementById('feed');
+      feed.innerHTML = '';
+      try {
+        const res = await fetch('/api/posts');
+        const posts = await res.json();
+        if (!Array.isArray(posts)) return;
+        posts.forEach((post, idx) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.id = 'card' + idx;
+          card.innerHTML = `
+            ${post.imageUrl ? `<img src="${post.imageUrl.startsWith('/uploads') ? post.imageUrl : '/uploads/' + post.imageUrl}" alt="Imagem">` : ''}
+            <h2>${post.title || post.type || 'Reclamação'}</h2>
+            <p>${post.location ? `<b>Local:</b> ${post.location}<br>` : ''}
+            ${post.type ? `<b>Tipo:</b> ${post.type}<br>` : ''}
+            ${post.waitTime ? `<b>Tempo de espera:</b> ${post.waitTime}<br>` : ''}
+            <b>Curtidas:</b> ${(post.likes && post.likes.length) || 0}
+            </p>
+            <button class="show-comments-btn" onclick="toggleComments('comments${idx}')">Comentários (${(post.comments && post.comments.length) || 0})</button>
+            <div class="comments-list" id="comments${idx}" style="display:none;margin-top:8px;"></div>
+            <form class="add-comment" onsubmit="event.preventDefault(); addComment('${'card'+idx}', this)">
+              <input type="text" placeholder="Comente..." required>
+              <button type="submit">Enviar</button>
+            </form>
+            <div class="actions">
+              <button class="action-btn reject" title="Rejeitar" onclick="swipeCard('${'card'+idx}', 'left')">&#10006;</button>
+              <button class="action-btn like" title="Curtir" onclick="swipeCard('${'card'+idx}', 'right')">&#10084;</button>
+            </div>
+          `;
+          // Swipe para mobile
+          card.ontouchstart = function(e) {
+            startX = e.touches[0].clientX;
+            currentCard = card;
+          };
+          card.ontouchmove = function(e) {
+            if (startX === null) return;
+            let dx = e.touches[0].clientX - startX;
+            card.style.transform = `translateX(${dx}px) rotate(${dx/20}deg)`;
+          };
+          card.ontouchend = function(e) {
+            if (startX === null) return;
+            let dx = e.changedTouches[0].clientX - startX;
+            if (dx > 80) {
+              swipeCard(card.id, 'right');
+            } else if (dx < -80) {
+              swipeCard(card.id, 'left');
+            } else {
+              card.style.transform = '';
+            }
+            startX = null;
+            currentCard = null;
+          };
+          // Renderizar comentários como cards
+          card.querySelector('.show-comments-btn').onclick = function() {
+            toggleComments('comments'+idx, post);
+          };
+          feed.appendChild(card);
+        });
+      } catch (err) {
+        feed.innerHTML = '<div style="color:#D32F2F;text-align:center;">Erro ao carregar feed.</div>';
+      }
+    }
+
+    // Função para mostrar/ocultar comentários como cards
+    function toggleComments(commentsId, postObj) {
+      const div = document.getElementById(commentsId);
+      if (!div) return;
+      if (div.style.display === 'none' || div.style.display === '') {
+        div.style.display = 'block';
+        div.innerHTML = '';
+        const post = postObj || {};
+        if (post.comments && post.comments.length > 0) {
+          post.comments.forEach(c => {
+            const cdiv = document.createElement('div');
+            cdiv.style.background = '#e3f2fd';
+            cdiv.style.borderRadius = '8px';
+            cdiv.style.margin = '6px 0';
+            cdiv.style.padding = '8px 12px';
+            cdiv.style.color = '#222';
+            cdiv.style.fontSize = '1rem';
+            cdiv.textContent = (c.user ? c.user + ': ' : '') + c.text;
+            div.appendChild(cdiv);
+          });
+        } else {
+          div.innerHTML = '<div style="color:#555;">Sem comentários ainda.</div>';
+        }
+      } else {
+        div.style.display = 'none';
+      }
+    }
+    // Swipe para mobile (Tinder-like)
+    let startX = null;
+    let currentCard = null;
+    function swipeCard(cardId, direction) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      card.style.transition = 'transform 0.3s, opacity 0.3s';
+      if (direction === 'right') {
+        card.style.transform = 'translateX(400px) rotate(20deg)';
+      } else {
+        card.style.transform = 'translateX(-400px) rotate(-20deg)';
+      }
+      setTimeout(() => {
+        card.style.display = 'none';
+      }, 300);
+    }
+    // Comentários (apenas frontend)
+    function addComment(cardId, form) {
+      const input = form.querySelector('input');
+      const commentsDiv = form.parentElement.querySelector('.comments');
+      if (input.value.trim()) {
+        const div = document.createElement('div');
+        div.textContent = 'Você: ' + input.value;
+        commentsDiv.appendChild(div);
+        input.value = '';
+        commentsDiv.scrollTop = commentsDiv.scrollHeight;
+      }
+    }
+    // Botão de perfil
+    document.querySelector('.btn-profile').onclick = function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+      } else {
+        window.location.href = 'perfil.html';
+      }
+    };
+    // Carregar feed ao abrir
+    loadFeed();
+  </script>
 </body>
 </html>

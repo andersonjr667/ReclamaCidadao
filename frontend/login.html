@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - ReclamaCidadão</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    body { background: #F5F5F5; font-family: Arial, sans-serif; }
+    .login-container { max-width: 350px; margin: 60px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px; }
+    h2 { text-align: center; color: #1E88E5; margin-bottom: 24px; }
+    label { display: block; margin-bottom: 6px; color: #333; }
+    input { width: 100%; padding: 10px; margin-bottom: 18px; border: 1px solid #ccc; border-radius: 6px; }
+    button { width: 100%; background: #1E88E5; color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #1565C0; }
+    .register-link { text-align: center; margin-top: 16px; }
+    .register-link a { color: #FF9800; text-decoration: none; }
+    .error { color: #d32f2f; text-align: center; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Entrar</h2>
+    <form id="loginForm">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" required>
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" required>
+      <div class="error" id="loginError"></div>
+      <button type="submit">Entrar</button>
+    </form>
+    <div class="register-link">
+      Não tem conta? <a href="register.html">Cadastre-se</a>
+    </div>
+  </div>
+  <script>
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const email = this.email.value;
+      const password = this.password.value;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = 'index.html';
+      } else {
+        document.getElementById('loginError').textContent = data.error || 'Erro ao fazer login';
+      }
+    };
+  </script>
+</body>
+</html>
