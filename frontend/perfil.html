@@ -4,32 +4,311 @@
   <meta charset="UTF-8">
   <title>Perfil - ReclamaCidadão</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/png" href="icons/logo.png">
   <style>
-    body { background: #F5F5F5; font-family: Arial, sans-serif; margin: 0; }
-    .navbar { background: #2196F3; color: #fff; padding: 18px 0 12px 0; text-align: center; font-size: 2rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; }
-    .navbar img { width: 38px; margin-right: 10px; }
-    .profile-main { max-width: 900px; margin: 30px auto 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px; }
-    .profile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
-    .profile-user { display: flex; align-items: center; }
-    .profile-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #1976D2; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; margin-right: 18px; }
-    .profile-info { display: flex; flex-direction: column; }
-    .profile-info .name { font-weight: bold; font-size: 1.2rem; color: #222; }
-    .profile-info .userid { color: #444; font-size: 0.98rem; margin-top: 2px; }
-    .profile-actions { display: flex; gap: 10px; }
-    .btn-like { background: #4A90E2; color: #fff; border: none; border-radius: 6px; padding: 10px 18px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
-    .btn-like:hover { background: #1976D2; }
-    .btn-home { background: #fff; color: #1976D2; border: 2px solid #1976D2; border-radius: 6px; padding: 10px 18px; font-size: 1rem; cursor: pointer; margin-left: 8px; transition: background 0.2s, color 0.2s; }
-    .btn-home:hover { background: #1976D2; color: #fff; }
-    .posts-list { display: flex; gap: 24px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
-    .post-card { background: #64a6e6; color: #222; border-radius: 10px; width: 180px; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 500; box-shadow: 0 2px 8px #0001; transition: box-shadow 0.2s; cursor: pointer; }
-    .post-card:hover { box-shadow: 0 4px 16px #0002; }
-    @media (max-width: 700px) { .profile-main { padding: 12px 2vw; } .posts-list { gap: 10px; } .post-card { width: 110px; height: 90px; font-size: 1.1rem; } }
+    :root {
+  --primary: #2D5B7C;
+  --primary-dark: #1E3B52;
+  --secondary: #43AA8B;
+  --secondary-dark: #2E8B6F;
+  --accent: #F9C74F;
+  --accent-dark: #F0B42A;
+  --text: #212529;
+  --text-light: #6C757D;
+  --background: #F8F9FA;
+  --surface: #FFFFFF;
+  --error: #E63946;
+  --success: #2A9D8F;
+  --border: #DEE2E6;
+  --shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      background: var(--background); 
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    .navbar {
+      background: var(--primary);
+      color: var(--surface);
+      padding: 16px 0;
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar img {
+      width: 50px;
+      height: 50px;
+      vertical-align: middle;
+      margin-right: 12px;
+      object-fit: contain;
+    }
+    
+    .profile-main { 
+      width: 100%;
+      max-width: 900px; 
+      margin: 0 auto 40px auto; 
+      background: var(--surface); 
+      border-radius: 12px; 
+      box-shadow: var(--shadow); 
+      padding: 32px 28px;
+      transition: var(--transition);
+    }
+    
+    .profile-top { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .profile-user { 
+      display: flex; 
+      align-items: center; 
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .profile-photo { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      background: var(--primary-dark); 
+      color: var(--surface); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 1.4rem; 
+      font-weight: bold; 
+      margin-right: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    .profile-info { 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    .profile-info .name { 
+      font-weight: 600; 
+      font-size: 1.4rem; 
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .profile-info .userid { 
+      color: var(--text-light); 
+      font-size: 1rem; 
+    }
+    
+    .profile-actions { 
+      display: flex; 
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-like { 
+      background: var(--primary); 
+      color: var(--surface); 
+      border: none; 
+      border-radius: 8px; 
+      padding: 12px 20px; 
+      font-size: 1rem; 
+      font-weight: 500;
+      cursor: pointer; 
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+    
+    .btn-like:hover { 
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn-home { 
+      background: var(--surface); 
+      color: var(--primary); 
+      border: 2px solid var(--primary); 
+      border-radius: 8px; 
+      padding: 10px 18px; 
+      font-size: 1rem; 
+      font-weight: 500;
+      cursor: pointer; 
+      transition: var(--transition);
+    }
+    
+    .btn-home:hover { 
+      background: var(--primary); 
+      color: var(--surface);
+      transform: translateY(-2px);
+    }
+    
+    .posts-list { 
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px; 
+      margin-top: 30px;
+    }
+    
+    .post-card { 
+      background: linear-gradient(135deg, #64a6e6 0%, #1E88E5 100%); 
+      color: var(--surface); 
+      border-radius: 12px; 
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      font-size: 1.8rem; 
+      font-weight: 500; 
+      box-shadow: var(--shadow); 
+      transition: var(--transition); 
+      cursor: pointer; 
+      overflow: hidden;
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .post-card:hover { 
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-4px);
+    }
+    
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-light);
+      padding: 40px 20px;
+      font-size: 1.1rem;
+    }
+    
+    @media (max-width: 900px) {
+      .profile-main {
+        margin: 0 20px 40px 20px;
+        width: auto;
+      }
+    }
+    
+    @media (max-width: 700px) {
+      .profile-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .profile-actions {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .posts-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+      }
+      
+      .post-card {
+        font-size: 1.4rem;
+        padding: 12px;
+      }
+      
+      .navbar {
+        font-size: 1.5rem;
+        padding: 16px 0;
+      }
+      
+      .navbar img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .profile-main {
+        padding: 12px 4px;
+        margin: 0 2vw 24px 2vw;
+        max-width: 99vw;
+      }
+      .posts-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .profile-user {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+      .profile-photo {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 60px;
+        height: 60px;
+      }
+      .post-card {
+        font-size: 1.1rem;
+        padding: 8px;
+      }
+      .navbar {
+        font-size: 1.1rem;
+        padding: 10px 0;
+      }
+      .navbar img.logo {
+        width: 32px;
+        height: 32px;
+        margin-right: 6px;
+      }
+      #searchBox {
+        max-width: 90vw;
+        font-size: 0.9rem;
+        padding: 6px 8px;
+      }
+      .btn-logout {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        right: 10px !important;
+      }
+      .btn-like, .btn-home {
+        padding: 8px 10px;
+        font-size: 0.95rem;
+      }
+      .profile-info .name {
+        font-size: 1.1rem;
+      }
+      .profile-info .userid {
+        font-size: 0.9rem;
+      }
+      .empty-state {
+        font-size: 0.95rem;
+        padding: 20px 6px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="navbar">
-    <img src="logo.png" alt="Logo ReclamaCidadão"> ReclamaCidadão
+  <!-- botão de perfil removido do header na página de perfil -->
+    <img src="icons/logo.png" alt="Logo ReclamaCidadão" class="logo"> ReclamaCidadão
+    <input id="searchBox" type="text" placeholder="Pesquisar postagens ou perfis" style="margin-left:16px;padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);font-size:0.9rem;max-width:200px;background:rgba(255,255,255,0.15);color:white;transition:var(--transition);">
+    <button class="btn-logout" id="logoutBtn" title="Sair da conta" style="position:absolute;right:90px;top:50%;transform:translateY(-50%);background:#E63946;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:600;cursor:pointer;transition:var(--transition);">Sair</button>
   </div>
   <div class="profile-main">
     <div class="profile-top">
@@ -41,7 +320,8 @@
         </div>
       </div>
       <div class="profile-actions">
-        <button class="btn-like" id="likeProfile">Curtir perfil</button>
+  <button class="btn-like" id="likeProfile">Curtir perfil</button>
+  <span id="profileLikes" style="margin-left:10px;color:#1E88E5;font-weight:bold;"></span>
         <button class="btn-home" onclick="window.location.href='index.html'">Página inicial</button>
       </div>
     </div>
@@ -50,20 +330,21 @@
     </div>
   </div>
   <script>
-    async function loadProfile() {
+  async function loadProfile() {
       const token = localStorage.getItem('token');
-      if (!token) { window.location.href = 'login.html'; return; }
-      const res = await fetch('/api/profile', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      if (!res.ok) { localStorage.removeItem('token'); window.location.href = 'login.html'; return; }
-      const user = await res.json();
+      let user = {};
+      try {
+        const res = token ? await fetch('/api/profile', { headers: { 'Authorization': 'Bearer ' + token } }) : await fetch('/api/profile');
+        if (res.ok) {
+          user = await res.json();
+        }
+      } catch {}
       document.getElementById('profileName').textContent = user.name || 'Nome completo';
       document.getElementById('profileId').textContent = user._id || user.id || 'Codigo Usuario';
       if (user.photo) {
         document.getElementById('profilePhoto').innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
       } else {
-        document.getElementById('profilePhoto').innerHTML = 'Foto<br>de perfil';
+        document.getElementById('profilePhoto').innerHTML = `<img src="icons/default.png" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
       }
       // Carregar posts do usuário
       let posts = [];
@@ -71,11 +352,20 @@
         const resPosts = await fetch('/api/posts');
         posts = await resPosts.json();
       } catch {}
-      const userPosts = posts.filter(p => p.user === user._id || p.user === user.id);
+      // Filtro de pesquisa
+      const search = (document.getElementById('searchBox')?.value || '').toLowerCase();
+      let userPosts = posts.filter(p => p.user === user._id || p.user === user.id);
+      if (search) {
+        userPosts = userPosts.filter(p =>
+          (p.type && p.type.toLowerCase().includes(search)) ||
+          (p.location && p.location.toLowerCase().includes(search)) ||
+          (p.title && p.title.toLowerCase().includes(search))
+        );
+      }
       const postsDiv = document.getElementById('userPosts');
       postsDiv.innerHTML = '';
       if (userPosts.length === 0) {
-        postsDiv.innerHTML = '<div style="color:#333;text-align:center;width:100%;">Nenhuma postagem ainda.</div>';
+        postsDiv.innerHTML = '<div class="empty-state">Nenhuma postagem ainda.</div>';
       } else {
         userPosts.forEach((post, idx) => {
           const div = document.createElement('div');
@@ -85,7 +375,7 @@
           div.style.alignItems = 'center';
           div.style.padding = '10px';
           div.style.cursor = 'pointer';
-          div.onclick = () => window.location.href = `post.html?id=${post.id || post._id}`;
+          div.onclick = () => window.location.href = `index.html?post=${post.id || post._id}`;
           if (post.imageUrl) {
             const img = document.createElement('img');
             img.src = post.imageUrl.startsWith('/uploads') ? post.imageUrl : '/uploads/' + post.imageUrl;
@@ -105,17 +395,43 @@
           if (post.location) {
             const loc = document.createElement('div');
             loc.style.fontSize = '0.95rem';
-            loc.style.color = '#333';
+            loc.style.color = '#fff';
             loc.textContent = post.location;
             div.appendChild(loc);
           }
+          // Mostrar curtidas
+          const likes = document.createElement('div');
+          likes.style.fontSize = '0.95rem';
+          likes.style.color = '#fff';
+          likes.textContent = `Curtidas: ${(post.likes && post.likes.length) || 0}`;
+          div.appendChild(likes);
           postsDiv.appendChild(div);
         });
       }
     }
-    document.getElementById('likeProfile').onclick = function() {
-      alert('Função de curtir perfil em breve!');
+    // Curtir perfil funcional
+    document.getElementById('likeProfile').onclick = async function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Faça login para curtir perfis!');
+        return;
+      }
+      const res = await fetch('/api/profile/like', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+      if (res.ok) {
+        const data = await res.json();
+        document.getElementById('profileLikes').textContent = `Curtidas: ${data.likes || 1}`;
+        alert('Perfil curtido!');
+      } else {
+        alert('Erro ao curtir perfil');
+      }
     };
+    // Botão de logout
+    document.getElementById('logoutBtn').onclick = function() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    };
+    // Pesquisa dinâmica
+    document.getElementById('searchBox').addEventListener('input', loadProfile);
     loadProfile();
   </script>
 </body>

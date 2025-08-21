@@ -6,20 +6,170 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="logo.png">
   <style>
-    body { background: #F5F5F5; font-family: Arial, sans-serif; }
-    .register-container { max-width: 370px; margin: 60px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px; }
-    h2 { text-align: center; color: #1E88E5; margin-bottom: 24px; }
-    label { display: block; margin-bottom: 6px; color: #333; }
-    input { width: 100%; padding: 10px; margin-bottom: 18px; border: 1px solid #ccc; border-radius: 6px; }
-    button { width: 100%; background: #FF9800; color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer; }
-    button:hover { background: #F57C00; }
-    .login-link { text-align: center; margin-top: 16px; }
-    .login-link a { color: #1E88E5; text-decoration: none; }
-    .error { color: #d32f2f; text-align: center; margin-bottom: 10px; }
-    .success { color: #388e3c; text-align: center; margin-bottom: 10px; }
+    :root {
+  --primary: #2D5B7C;
+  --primary-dark: #1E3B52;
+  --secondary: #43AA8B;
+  --secondary-dark: #2E8B6F;
+  --accent: #F9C74F;
+  --accent-dark: #F0B42A;
+  --text: #212529;
+  --text-light: #6C757D;
+  --background: #F8F9FA;
+  --surface: #FFFFFF;
+  --error: #E63946;
+  --success: #2A9D8F;
+  --border: #DEE2E6;
+  --shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      background: var(--background); 
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .register-container { 
+      width: 100%;
+      max-width: 420px; 
+      margin: 0 auto; 
+      background: var(--surface); 
+      border-radius: 12px; 
+      box-shadow: var(--shadow); 
+      padding: 32px 28px;
+      transition: var(--transition);
+    }
+    
+    h2 { 
+      text-align: center; 
+      color: var(--primary); 
+      margin-bottom: 28px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      color: var(--text);
+      font-weight: 500;
+    }
+    
+    input { 
+      width: 100%; 
+      padding: 12px 14px; 
+      margin-bottom: 20px; 
+      border: 1px solid var(--border); 
+      border-radius: 8px; 
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+    }
+    
+    button { 
+      width: 100%; 
+      background: var(--secondary); 
+      color: var(--surface); 
+      border: none; 
+      padding: 14px; 
+      border-radius: 8px; 
+      font-size: 16px; 
+      font-weight: 600;
+      cursor: pointer; 
+      transition: var(--transition);
+    }
+    
+    button:hover { 
+      background: var(--secondary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .login-link { 
+      text-align: center; 
+      margin-top: 24px; 
+      color: var(--text-light);
+      font-size: 15px;
+    }
+    
+    .login-link a { 
+      color: var(--primary); 
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    
+    .login-link a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+    
+    .error { 
+      color: var(--error); 
+      text-align: center; 
+      margin-bottom: 16px;
+      padding: 10px;
+      background-color: rgba(211, 47, 47, 0.08);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .success { 
+      color: var(--success); 
+      text-align: center; 
+      margin-bottom: 16px;
+      padding: 10px;
+      background-color: rgba(56, 142, 60, 0.08);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 18px 8px;
+        max-width: 98vw;
+      }
+      h2 {
+        font-size: 22px;
+      }
+      input, button {
+        font-size: 15px;
+        padding: 10px 8px;
+      }
+      label {
+        font-size: 15px;
+      }
+      .login-link {
+        font-size: 13px;
+      }
+      img[alt="Logo ReclamaCidadão"] {
+        width: 48px !important;
+        height: 48px !important;
+      }
+    }
   </style>
 </head>
 <body>
+  <div style="display:flex;justify-content:center;margin-bottom:18px;">
+    <img src="icons/logo.png" alt="Logo ReclamaCidadão" style="width:64px;height:64px;object-fit:contain;">
+  </div>
   <div class="register-container">
     <h2>Criar Conta</h2>
     <form id="registerForm">

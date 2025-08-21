@@ -1,3 +1,23 @@
+// Inicia o túnel Serveo automaticamente
+require('child_process').fork('./tunnel.js');
+// Corrige imageUrl de todos os posts antigos no JSON local ao iniciar o servidor
+
+function fixImageUrlsInJsonDb() {
+  if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
+  let changed = false;
+  for (const post of jsonDb.posts) {
+    if (post.imageUrl) {
+      // Remove qualquer caminho absoluto e deixa só o nome do arquivo
+      const match = post.imageUrl.match(/([\\/])?([\w\-]+\.(jpg|jpeg|png|gif))/i);
+      if (match) {
+        post.imageUrl = '/uploads/' + match[2];
+        changed = true;
+      }
+    }
+  }
+  if (changed) saveJsonCollection('posts', jsonDb.posts);
+}
+
 // Backend principal do ReclamaCidadão
 
 const express = require('express');
@@ -66,6 +86,7 @@ async function tryConnectMongo() {
 }
 
 tryConnectMongo();
+fixImageUrlsInJsonDb();
 
 const upload = require('./backend/middleware/upload');
 const authController = require('./backend/controllers/authController');
@@ -215,21 +236,7 @@ app.post('/api/posts', auth, upload.single('image'), async (req, res) => {
     const fileName = req.file.filename || (req.file.path ? req.file.path.split(/[/\\]/).pop() : '');
     imageUrl = '/uploads/' + fileName;
   }
-  // MongoDB
-  if (!useJsonDb) {
-    try {
-      const Post = require('./backend/models/Post');
-      const post = new Post({
-        user: req.userId,
-        location,
-        type,
-        waitTime,
-        imageUrl
-      });
-      await post.save();
-      return res.status(201).json(post);
-    } catch (err) {}
-  }
+  // Sempre salva post no JSON local
   // JSON local
   if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
   const post = {
@@ -250,13 +257,7 @@ app.post('/api/posts', auth, upload.single('image'), async (req, res) => {
 
 // Listar feed de posts (MongoDB ou JSON local)
 app.get('/api/posts', async (req, res) => {
-  if (!useJsonDb) {
-    try {
-      const Post = require('./backend/models/Post');
-      const posts = await Post.find().sort({ createdAt: -1 }).populate('user likes comments');
-      return res.json(posts);
-    } catch (err) {}
-  }
+  // Sempre lista posts do JSON local
   if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
   // Ordena por data decrescente
   const posts = [...jsonDb.posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -265,44 +266,29 @@ app.get('/api/posts', async (req, res) => {
 
 // Curtir post (MongoDB ou JSON local)
 app.post('/api/posts/:id/like', auth, async (req, res) => {
-  if (!useJsonDb) {
-    try {
-      const Post = require('./backend/models/Post');
-      const post = await Post.findById(req.params.id);
-      if (!post.likes.includes(req.userId)) {
-        post.likes.push(req.userId);
-        await post.save();
-      }
-      return res.json(post);
-    } catch (err) {}
-  }
+  // Salva curtida no JSON local (campo likes do post)
   if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
   const post = jsonDb.posts.find(p => p.id === req.params.id);
   if (!post) return res.status(404).json({ error: 'Post não encontrado' });
   if (!post.likes.includes(req.userId)) post.likes.push(req.userId);
   saveJsonCollection('posts', jsonDb.posts);
+  // Também salva curtida no MongoDB (campo likes do usuário)
+  try {
+    const User = require('./backend/models/User');
+    const user = await User.findById(req.userId);
+    if (user && (!user.likedPosts || !user.likedPosts.includes(req.params.id))) {
+      if (!user.likedPosts) user.likedPosts = [];
+      user.likedPosts.push(req.params.id);
+      await user.save();
+    }
+  } catch (e) {}
   res.json(post);
 });
 
 // Comentar post (MongoDB ou JSON local)
 app.post('/api/posts/:id/comment', auth, async (req, res) => {
   const { text } = req.body;
-  if (!useJsonDb) {
-    try {
-      const Comment = require('./backend/models/Comment');
-      const Post = require('./backend/models/Post');
-      const comment = new Comment({
-        user: req.userId,
-        post: req.params.id,
-        text
-      });
-      await comment.save();
-      const post = await Post.findById(req.params.id);
-      post.comments.push(comment._id);
-      await post.save();
-      return res.status(201).json(comment);
-    } catch (err) {}
-  }
+  // Sempre salva comentário no JSON local
   if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
   const post = jsonDb.posts.find(p => p.id === req.params.id);
   if (!post) return res.status(404).json({ error: 'Post não encontrado' });
@@ -321,10 +307,13 @@ app.post('/api/posts/:id/comment', auth, async (req, res) => {
 
 // Excluir post
 app.delete('/api/posts/:id', auth, async (req, res) => {
-  const post = await require('./backend/models/Post').findById(req.params.id);
-  if (!post) return res.status(404).json({ error: 'Post não encontrado' });
-  if (post.user.toString() !== req.userId) return res.status(403).json({ error: 'Sem permissão' });
-  await post.deleteOne();
+  // Sempre exclui do JSON local
+  if (!jsonDb.posts) jsonDb.posts = loadJsonCollection('posts');
+  const idx = jsonDb.posts.findIndex(p => p.id === req.params.id || p._id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Post não encontrado' });
+  if (jsonDb.posts[idx].user !== req.userId) return res.status(403).json({ error: 'Sem permissão' });
+  jsonDb.posts.splice(idx, 1);
+  saveJsonCollection('posts', jsonDb.posts);
   res.json({ message: 'Post excluído' });
 });
 
